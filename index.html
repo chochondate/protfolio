@@ -4,10 +4,117 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kelvin Mbugua Njau — Software Engineer</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23080c0a'/><text x='50%25' y='54%25' font-size='18' text-anchor='middle' dominant-baseline='middle' font-family='serif' fill='%23a8ff78'>K</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
+/* ── SPLASH SCREEN ── */
+#splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #080c0a;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0;
+  transition: opacity 0.7s ease, visibility 0.7s ease;
+  overflow: hidden;
+}
+#splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* ambient glow */
+.sp-glow {
+  position: absolute;
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(168,255,120,0.07) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -60%);
+  pointer-events: none;
+  animation: spGlowPulse 2s ease-in-out infinite;
+}
+@keyframes spGlowPulse {
+  0%,100% { opacity: 0.6; transform: translate(-50%,-60%) scale(1); }
+  50%      { opacity: 1;   transform: translate(-50%,-60%) scale(1.08); }
+}
+
+/* grid lines */
+.sp-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(168,255,120,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,255,120,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.sp-content {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 36px;
+  animation: spFadeUp 0.6s ease forwards;
+}
+@keyframes spFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* name */
+.sp-name {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.8rem, 8vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #e8f0ec;
+  line-height: 1;
+}
+.sp-name span { color: #a8ff78; }
+
+.sp-role {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 0.25em;
+  text-transform: uppercase; color: #4a5e54;
+  margin-top: -20px;
+}
+
+/* swipe-up glow bar */
+.sp-bar-track {
+  width: 280px; height: 2px;
+  background: rgba(168,255,120,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.sp-bar-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, transparent 0%, #a8ff78 40%, #c8ff98 60%, #a8ff78 80%, transparent 100%);
+  border-radius: 2px;
+  animation: spBarSwipe 2.3s cubic-bezier(0.4,0,0.2,1) forwards;
+  position: relative;
+}
+/* glowing leading edge */
+.sp-bar-fill::after {
+  content: '';
+  position: absolute; right: 0; top: -4px;
+  width: 24px; height: 10px;
+  background: radial-gradient(ellipse, rgba(168,255,120,0.9) 0%, transparent 70%);
+  pointer-events: none;
+}
+@keyframes spBarSwipe {
+  0%   { width: 0%; }
+  20%  { width: 15%; }
+  60%  { width: 70%; }
+  85%  { width: 92%; }
+  100% { width: 100%; }
+}
+
+.sp-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.15em;
+  color: #a8ff78; opacity: 0.5;
+  margin-top: -20px;
+}
+  60%  { width: 75%; }
+  100% { width: 100%; }
+}
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #080c0a;
@@ -588,17 +695,76 @@ nav {
 }
 .contact-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
 .contact-title { font-family: var(--display); font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; }
-.contact-sub { color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 1rem; }
-.contact-email {
-  font-family: var(--mono);
-  font-size: 1.1rem;
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid var(--accent-border);
-  padding-bottom: 2px;
-  transition: color 0.2s;
+.contact-sub { color: var(--text-secondary); margin-bottom: 3rem; font-size: 1rem; }
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  text-align: left;
 }
-.contact-email:hover { color: #c8ff98; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+.form-group label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-primary);
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: var(--text-muted); }
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus { border-color: var(--accent-border); box-shadow: 0 0 0 3px rgba(168,255,120,0.06); }
+.form-group textarea { resize: vertical; min-height: 140px; line-height: 1.6; }
+.form-submit {
+  width: 100%;
+  padding: 14px 28px;
+  background: var(--accent);
+  color: #080c0a;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.form-submit:hover { background: #c8ff98; transform: translateY(-1px); }
+.form-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.form-success {
+  display: none;
+  text-align: center;
+  padding: 2.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius);
+}
+.form-success .checkmark { font-size: 2rem; margin-bottom: 1rem; color: var(--accent); }
+.form-success h3 { font-family: var(--display); font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
+.form-success p { color: var(--text-secondary); font-size: 0.9rem; }
+@media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
 .footer-meta {
   margin-top: 5rem;
   display: flex;
@@ -621,14 +787,30 @@ nav {
 </head>
 <body>
 
+<!-- ══ SPLASH ══ -->
+<div id="splash">
+  <div class="sp-glow"></div>
+  <div class="sp-grid"></div>
+  <div class="sp-content">
+    <div>
+      <div class="sp-name">KMN<span>.</span></div>
+      <div class="sp-role">Software Engineer · Nairobi</div>
+    </div>
+    <div class="sp-bar-track">
+      <div class="sp-bar-fill"></div>
+    </div>
+    <div class="sp-pct" id="sp-pct">0%</div>
+  </div>
+</div>
+
 <nav>
   <div class="nav-inner">
     <a href="#" class="nav-logo">KMN.dev</a>
     <ul class="nav-links">
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#contact">Contact</a></li>
-      <li><a href="https://obsidian-wbst.netlify.app/" target="_blank">Obsidian ↗</a></li>
+      <li><a href="#projects"><svg style="display:inline-block;flex-shrink:0;vertical-align:-2px;margin-right:5px;" width="13" height="13" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Projects</a></li>
+      <li><a href="#about"><svg style="display:inline-block;flex-shrink:0;vertical-align:-2px;margin-right:5px;" width="13" height="13" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>About</a></li>
+      <li><a href="#contact"><svg style="display:inline-block;flex-shrink:0;vertical-align:-2px;margin-right:5px;" width="13" height="13" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact</a></li>
+      <li><a href="https://obsidian-wbst.netlify.app/" target="_blank"><svg style="display:inline-block;flex-shrink:0;vertical-align:-2px;margin-right:5px;" width="13" height="13" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Obsidian</a></li>
     </ul>
   </div>
 </nav>
@@ -643,8 +825,9 @@ nav {
     </h1>
     <p class="hero-sub">Building precise, intelligent systems — from security intelligence to smart property tech and developer tooling.</p>
     <a href="#projects" class="hero-cta">
+      <svg style="display:inline-block;flex-shrink:0;" width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       View Projects
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <svg style="display:inline-block;flex-shrink:0;" width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
   </div>
   <div class="hero-scroll">
@@ -656,7 +839,7 @@ nav {
 <!-- PROJECTS -->
 <section class="section" id="projects">
   <div class="wrapper">
-    <p class="section-label">Selected Work</p>
+    <p class="section-label"><svg style="display:inline-block;flex-shrink:0;vertical-align:-2px;margin-right:4px;" width="13" height="13" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><polyline points="9 13 7 15 9 17"/><polyline points="15 13 17 15 15 17"/></svg>Selected Work</p>
     <h2 class="section-title">Projects</h2>
     <p class="section-desc">Click any project to explore the details and learn more at Obsidian.</p>
     <div class="projects-grid">
@@ -685,7 +868,7 @@ nav {
             <span class="tag">Security</span><span class="tag">Real-time</span><span class="tag">AI/ML</span>
           </div>
           <div class="project-footer">
-            <span class="project-link">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            <span class="project-link"><svg style="display:inline-block;flex-shrink:0;" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Explore <svg style="display:inline-block;flex-shrink:0;" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
         </div>
       </div>
@@ -715,7 +898,7 @@ nav {
             <span class="tag">PropTech</span><span class="tag">Automation</span><span class="tag">SaaS</span>
           </div>
           <div class="project-footer">
-            <span class="project-link">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            <span class="project-link"><svg style="display:inline-block;flex-shrink:0;" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Explore <svg style="display:inline-block;flex-shrink:0;" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
         </div>
       </div>
@@ -746,7 +929,7 @@ nav {
             <span class="tag">DevOps</span><span class="tag">CLI</span><span class="tag">Cloud</span>
           </div>
           <div class="project-footer">
-            <span class="project-link">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            <span class="project-link"><svg style="display:inline-block;flex-shrink:0;" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg> Explore <svg style="display:inline-block;flex-shrink:0;" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
         </div>
       </div>
@@ -758,7 +941,7 @@ nav {
 <!-- ABOUT -->
 <section class="section" id="about">
   <div class="wrapper">
-    <p class="section-label">Background</p>
+    <p class="section-label"><svg style="display:inline-block;flex-shrink:0;vertical-align:-2px;margin-right:4px;" width="13" height="13" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Background</p>
     <h2 class="section-title">About Me</h2>
     <div class="about-grid">
       <div class="about-bio">
@@ -769,16 +952,16 @@ nav {
       <div>
         <p class="skills-label">Core Stack</p>
         <div class="skills-list">
-          <div class="skill-item">Python</div>
-          <div class="skill-item">TypeScript</div>
-          <div class="skill-item">Node.js</div>
-          <div class="skill-item">Go</div>
-          <div class="skill-item">Docker / K8s</div>
-          <div class="skill-item">Cloud (AWS/GCP)</div>
-          <div class="skill-item">Security Systems</div>
-          <div class="skill-item">ML / AI</div>
-          <div class="skill-item">PostgreSQL</div>
-          <div class="skill-item">System Design</div>
+          <div class="skill-item"><svg style="display:inline-block;flex-shrink:0;margin-right:4px;color:var(--accent);" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>Python</div>
+          <div class="skill-item"><svg style="display:inline-block;flex-shrink:0;margin-right:4px;color:var(--accent);" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 13 7 15 9 17"/><polyline points="15 13 17 15 15 17"/></svg>TypeScript</div>
+          <div class="skill-item"><svg style="display:inline-block;flex-shrink:0;margin-right:4px;color:var(--accent);" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>Node.js</div>
+          <div class="skill-item"><svg style="display:inline-block;flex-shrink:0;margin-right:4px;color:var(--accent);" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>Go</div>
+          <div class="skill-item"><svg style="display:inline-block;flex-shrink:0;margin-right:4px;color:var(--accent);" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Docker / K8s</div>
+          <div class="skill-item"><svg style="display:inline-block;flex-shrink:0;margin-right:4px;color:var(--accent);" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>Cloud (AWS/GCP)</div>
+          <div class="skill-item"><svg style="display:inline-block;flex-shrink:0;margin-right:4px;color:var(--accent);" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Security Systems</div>
+          <div class="skill-item"><svg style="display:inline-block;flex-shrink:0;margin-right:4px;color:var(--accent);" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 017 4.5v0A2.5 2.5 0 014.5 7v0A2.5 2.5 0 012 9.5v5A2.5 2.5 0 004.5 17v0A2.5 2.5 0 007 19.5v0A2.5 2.5 0 009.5 22h5a2.5 2.5 0 002.5-2.5v0a2.5 2.5 0 002.5-2.5v0a2.5 2.5 0 002.5-2.5v-5A2.5 2.5 0 0019.5 7v0A2.5 2.5 0 0017 4.5v0A2.5 2.5 0 0014.5 2z"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M7 7.5c1.5 0 3 .5 5 2"/><path d="M17 7.5c-1.5 0-3 .5-5 2"/><path d="M7 12c1.5 0 3 .5 5 2"/><path d="M17 12c-1.5 0-3 .5-5 2"/></svg>ML / AI</div>
+          <div class="skill-item"><svg style="display:inline-block;flex-shrink:0;margin-right:4px;color:var(--accent);" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>PostgreSQL</div>
+          <div class="skill-item"><svg style="display:inline-block;flex-shrink:0;margin-right:4px;color:var(--accent);" width="12" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>System Design</div>
         </div>
       </div>
     </div>
@@ -790,8 +973,45 @@ nav {
   <div class="wrapper" style="position:relative;z-index:1;">
     <p class="contact-label">Get in touch</p>
     <h2 class="contact-title">Let's Build Together</h2>
-    <p class="contact-sub">Have a project in mind? I'd love to hear about it.</p>
-    <a href="mailto:hello@kelvinnjau.dev" class="contact-email">hello@kelvinnjau.dev</a>
+    <p class="contact-sub">Have a project in mind or want to collaborate? Drop me a message and I'll get back to you.</p>
+
+    <div class="contact-form">
+      <!-- Success state -->
+      <div class="form-success" id="form-success">
+        <div class="checkmark">✓</div>
+        <h3>Message sent!</h3>
+        <p>Thanks for reaching out. I'll get back to you at the email you provided.</p>
+      </div>
+
+      <!-- Form — powered by Formspree, routes to njaudean90@gmail.com -->
+      <div id="form-wrap">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fname">Name</label>
+            <input type="text" id="fname" name="name" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label for="femail">Email</label>
+            <input type="email" id="femail" name="email" placeholder="you@example.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="fsubject">Subject</label>
+          <input type="text" id="fsubject" name="subject" placeholder="What's this about?">
+        </div>
+        <div class="form-group">
+          <label for="fmessage">Message</label>
+          <textarea id="fmessage" name="message" placeholder="Tell me about your project, idea, or opportunity..." required></textarea>
+        </div>
+        <button type="button" class="form-submit" id="form-btn" onclick="handleSubmit()">
+          <span id="btn-text">Send Message</span>
+          <svg id="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg id="btn-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:none;animation:spin 1s linear infinite;"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>
+        </button>
+        <p id="form-error" style="display:none;margin-top:12px;font-family:var(--mono);font-size:11px;color:#f09595;text-align:center;"></p>
+      </div>
+    </div>
+
     <div class="footer-meta">
       <span>© 2025 Kelvin Mbugua Njau</span>
       <a href="https://obsidian-wbst.netlify.app/" target="_blank" class="company-link">Obsidian ↗</a>
@@ -839,8 +1059,8 @@ nav {
           </ul>
         </div>
         <a href="https://obsidian-wbst.netlify.app/" target="_blank" class="modal-cta">
+          <svg style="display:inline-block;flex-shrink:0;" width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Learn More at Obsidian
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
         </a>
       </div>
     </div>
@@ -881,8 +1101,8 @@ nav {
           </ul>
         </div>
         <a href="https://obsidian-wbst.netlify.app/" target="_blank" class="modal-cta">
+          <svg style="display:inline-block;flex-shrink:0;" width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Learn More at Obsidian
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
         </a>
       </div>
     </div>
@@ -924,8 +1144,8 @@ nav {
           </ul>
         </div>
         <a href="https://obsidian-wbst.netlify.app/" target="_blank" class="modal-cta">
+          <svg style="display:inline-block;flex-shrink:0;" width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Learn More at Obsidian
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
         </a>
       </div>
     </div>
@@ -933,7 +1153,29 @@ nav {
   </div>
 </div>
 
+<style>
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
 <script>
+/* ── SPLASH ── */
+document.addEventListener('DOMContentLoaded', () => {
+  /* tick percentage counter */
+  let pct = 0;
+  const pctEl = document.getElementById('sp-pct');
+  const pctTimer = setInterval(() => {
+    pct = Math.min(pct + Math.floor(Math.random() * 5) + 2, 99);
+    if (pctEl) pctEl.textContent = pct + '%';
+  }, 55);
+  /* dismiss after 2.5s */
+  setTimeout(() => {
+    clearInterval(pctTimer);
+    if (pctEl) pctEl.textContent = '100%';
+    const splash = document.getElementById('splash');
+    if (splash) { splash.classList.add('hide'); setTimeout(() => splash.remove(), 750); }
+  }, 2500);
+});
+
+/* ── MODALS ── */
 function openModal(project) {
   ['sentinel','smartlease','bash'].forEach(p => {
     document.getElementById('modal-' + p).style.display = 'none';
@@ -950,6 +1192,57 @@ function handleBackdropClick(e) {
   if (e.target === document.getElementById('modal-backdrop')) closeModal();
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ── CONTACT FORM ── */
+async function handleSubmit() {
+  const name    = document.getElementById('fname').value.trim();
+  const email   = document.getElementById('femail').value.trim();
+  const message = document.getElementById('fmessage').value.trim();
+  const errEl   = document.getElementById('form-error');
+  errEl.style.display = 'none';
+
+  if (!name || !email || !message) {
+    errEl.textContent = 'Please fill in name, email, and message.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn     = document.getElementById('form-btn');
+  const btnText = document.getElementById('btn-text');
+  const arrow   = document.getElementById('btn-arrow');
+  const spin    = document.getElementById('btn-spin');
+
+  btn.disabled = true;
+  btnText.textContent = 'Sending...';
+  arrow.style.display = 'none';
+  spin.style.display  = 'inline';
+
+  try {
+    const res = await fetch('https://formspree.io/f/xnnvjrog', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        name,
+        email,
+        subject: document.getElementById('fsubject').value,
+        message,
+        _replyto: email
+      })
+    });
+
+    if (res.ok) {
+      document.getElementById('form-wrap').style.display    = 'none';
+      document.getElementById('form-success').style.display = 'block';
+    } else { throw new Error(); }
+  } catch {
+    errEl.textContent = 'Something went wrong. Please email njaudean90@gmail.com directly.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btnText.textContent = 'Send Message';
+    arrow.style.display = 'inline';
+    spin.style.display  = 'none';
+  }
+}
 </script>
 </body>
 </html>
